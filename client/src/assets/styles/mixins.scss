@@ -1,0 +1,139 @@
+@use "sass:list";
+@import "variable";
+
+@mixin fa-icon($icon) {
+  background: none;
+  display: inline-block;
+  font: normal normal bold 14px/1 "Font Awesome 5 Pro";
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-indent: 0px !important;
+  text-align: center;
+
+  &:before {
+    content: $icon;
+  }
+}
+
+@mixin text-style(
+  $color: $body-color /*#414141*/,
+  $size: null,
+  $line-height: normal,
+  $font-weight: normal
+) {
+  color: $color;
+  line-height: $line-height;
+  font-weight: $font-weight;
+  @if ($size) {
+    font-size: $size;
+  } @else {
+    font-size: $font-size-sm;
+    @include medium() {
+      font-size: $font-size-md;
+    }
+  }
+}
+
+@mixin lined(
+  $width: 60px,
+  $height: 2px,
+  $space: 15px,
+  $bgColor: $primary,
+  $position: center,
+  $hover-from: null
+) {
+  position: relative;
+  margin-bottom: $space;
+  &:before {
+    content: "";
+    position: absolute;
+    width: #{$width};
+    height: #{$height};
+    bottom: -#{$space};
+    background-color: $bgColor;
+    @if ($position == center) {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    @elseif ($position == left) {
+      left: 0;
+      right: auto;
+    }
+    @elseif ($position == right) {
+      right: 0;
+      left: auto;
+    }
+  }
+  @if ($hover-from != null) {
+    &:before {
+      transition: width 0.4s;
+      transform: translate(0);
+      bottom: 0;
+      width: 0;
+    }
+    @if ($hover-from == "left") {
+      &:before {
+        left: 0;
+      }
+      &:hover {
+        &:before {
+          width: 100%;
+        }
+      }
+    }
+    @elseif ($hover-from == "center") {
+      &:before {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      &:hover {
+        &:before {
+          width: 100%;
+        }
+      }
+    }
+    @elseif ($hover-from == "right") {
+      &:before {
+        right: 0;
+        left: auto;
+      }
+      &:hover {
+        &:before {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@mixin extraSmall {
+  @media (max-width: #{$extraSmall-width}) {
+    @content;
+  }
+}
+
+@mixin small {
+  @media (min-width: #{$small-min-width}) {
+    @content;
+  }
+}
+
+@mixin medium {
+  @media (min-width: #{$medium-min-width}) {
+    @content;
+  }
+}
+
+@mixin large {
+  @media (min-width: #{$large-min-width}) {
+    @content;
+  }
+}
+
+@mixin extraLarge {
+  @media (min-width: #{$extraLarge-min-width}) {
+    @content;
+  }
+}

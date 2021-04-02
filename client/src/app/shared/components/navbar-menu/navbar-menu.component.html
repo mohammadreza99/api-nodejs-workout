@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-sm shadow fixed-top">
+  <div class="collapse navbar-collapse">
+    <ng-button
+      icon="fa fa-bars"
+      color="primary"
+      appearance="text"
+      *ngIf="!sidebarLock"
+      (click)="showSidebar()"
+    >
+    </ng-button>
+    <div class="navbar-brand m{{ fa ? 'r' : 'l' }}-3"><logo></logo></div>
+    <ul class="navbar-nav p-0 m{{ fa ? 'r' : 'l' }}-auto">
+      <li class="nav-item">
+        <a class="nav-link py-0">
+          <ng-dropdown
+            [value]="selectedLanguage"
+            [options]="[
+              { label: 'EN', value: 'en' },
+              { label: 'FA', value: 'fa' }
+            ]"
+            [rtl]="selectedLanguage == 'fa'"
+            (onChange)="onLangChange($event)"
+          ></ng-dropdown>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link py-0">
+          <ng-dropdown
+            [value]="selectedTheme"
+            [options]="themes"
+            [rtl]="selectedLanguage == 'fa'"
+            (onChange)="changeTheme($event)"
+          ></ng-dropdown>
+        </a>
+      </li>
+      <li
+        class="nav-item p{{ fa ? 'r' : 'l' }}-4 m{{
+          fa ? 'r' : 'l'
+        }}-4 border-{{ fa ? 'right' : 'left' }}"
+        (click)="accountMenu.toggle($event)"
+      >
+        <span class="m{{ fa ? 'l' : 'r' }}-3">{{ "admin" }}</span>
+        <p-avatar shape="circle" size="large" icon="pi pi-user"></p-avatar>
+      </li>
+    </ul>
+  </div>
+</nav>
+<p-menu
+  #accountMenu
+  [baseZIndex]="20000"
+  [popup]="true"
+  [model]="accountItems"
+></p-menu>
+<p-sidebar
+  [class.lock]="sidebarLock"
+  [modal]="!sidebarLock"
+  [blockScroll]="!sidebarLock"
+  [closeOnEscape]="false"
+  [showCloseIcon]="false"
+  [visible]="sidebarVisible"
+  (visibleChange)="onSidebarVisibleChange($event)"
+  [position]="fa ? 'right' : 'left'"
+>
+  <i
+    pRipple
+    class="pi pi-lock{{
+      !sidebarLock ? '-open' : ''
+    }} fa-2x text-center d-block py-4 sticky-top shadow-sm"
+    (click)="onLockClick()"
+  ></i>
+  <p-panelMenu [multiple]="false" [model]="sideMenuItems"></p-panelMenu>
+</p-sidebar>

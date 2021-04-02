@@ -1,0 +1,82 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top',
+      'p-float-label': labelPos == 'float',
+      'p-input-icon-left': icon && iconPos == 'left',
+      'p-input-icon-right': icon && iconPos == 'right',
+      'p-inputtext-sm': inputSize == 'sm',
+      'p-inputtext-lg': inputSize == 'lg',
+      'p-input-filled': filled || value
+    }"
+  >
+    <i *ngIf="icon" [ngClass]="icon"></i>
+    <p-cascadeSelect
+      [(ngModel)]="value"
+      [ngAddon]="addon"
+      [inputId]="inputId"
+      [options]="options"
+      [optionLabel]="optionLabel"
+      [optionValue]="optionValue"
+      [optionDisabled]="optionDisabled"
+      [optionGroupLabel]="optionGroupLabel"
+      [optionGroupChildren]="optionGroupChildren"
+      [disabled]="disabled"
+      [readonly]="readonly"
+      [appendTo]="appendTo"
+      [placeholder]="placeholder"
+      [dataKey]="dataKey"
+      [ngClass]="{
+        'ng-invalid ng-dirty': ngControl ? isInvalid(ngControl.control) : false,
+        'p-inputwrapper-focus': opened,
+        'p-inputwrapper-filled': filled || value
+      }"
+      (onChange)="_onChange($event)"
+      (onGroupChange)="_onGroupChange($event)"
+      (onBeforeShow)="emitter('onBeforeShow', $event)"
+      (onBeforeHide)="emitter('onBeforeHide', $event)"
+      (onShow)="_onShow()"
+      (onHide)="_onHide()"
+      (onBeforeBtnClick)="emitter('onBeforeBtnClick', $event)"
+      (onAfterBtnClick)="emitter('onAfterBtnClick', $event)"
+    ></p-cascadeSelect>
+    <label *ngIf="label && labelPos == 'float'" [attr.for]="inputId">{{
+      label
+    }}</label>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small
+        *ngIf="showError(error.key)"
+        class="error p-invalid p-error"
+        [class.mt-4]="hint"
+      >
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl,
+      'text-muted': disabled
+    }"
+    [attr.for]="inputId"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

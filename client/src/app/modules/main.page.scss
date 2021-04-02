@@ -1,0 +1,19 @@
+main {
+  padding-top: 68px;
+  transition: all 0.3s;
+  height: 100%;
+  &.sidebar-open:not(.sidebar-lock) {
+    transform: translateX(20rem);
+    &.rtl { text-align: right;
+      transform: translateX(-20rem);
+    }
+  }
+
+  &.sidebar-lock {
+    margin-left: 20rem;
+    &.rtl { text-align: right;
+      margin-left: 0;
+      margin-right: 20rem;
+    }
+  }
+}

@@ -1,0 +1,41 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl
+  }"
+>
+  <div class="flex-grow-1 d-flex">
+    <div class="d-flex align-items-center">
+      <p-checkbox
+        [binary]="true"
+        [disabled]="disabled"
+        [(ngModel)]="value"
+        [inputId]="inputId"
+        [ngClass]="{
+          'ng-invalid ng-dirty': ngControl
+            ? isInvalid(ngControl.control)
+            : false
+        }"
+        (onChange)="_onChange($event)"
+      ></p-checkbox>
+      <label
+        class="mb-0"
+        [ngClass]="{
+          'ml-2': !rtl,
+          'mr-2': rtl
+        }"
+        [attr.for]="inputId"
+        >{{ label }}</label
+      >
+    </div>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small *ngIf="showError(error.key)" class="error p-invalid p-error"
+        [class.mt-4]="hint">
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

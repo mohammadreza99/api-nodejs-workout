@@ -1,0 +1,73 @@
+@import "mixins";
+
+:host ::ng-deep {
+  nav {
+    height: 68px;
+    z-index: 1500;
+    background-color: var(--surface-b);
+    border-bottom: 1px solid var(--surface-d);
+    .nav-item {
+      display: flex;
+      align-items: center;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  p-sidebar {
+    .p-sidebar {
+      padding: 0;
+      top: 68px;
+      overflow-y: auto;
+      height: calc(100% - 68px);
+      background: #f8f9fa;
+      .p-panelmenu {
+        &-header-link {
+          .p-panelmenu-icon {
+            margin-right: 0;
+            margin-left: 0.5rem;
+            &.pi-chevron-right {
+              @include fa-icon("\f053");
+            }
+
+            &.pi-chevron-down {
+              @include fa-icon("\f078");
+            }
+          }
+
+          &:focus {
+            box-shadow: none;
+          }
+        }
+
+        .p-menuitem-icon {
+          margin-right: 0;
+          margin-left: 0.5em;
+        }
+      }
+    }
+
+    &[ng-reflect-position="left"] {
+      .p-panelmenu {
+        &-header-link {
+          .p-panelmenu-icon {
+            margin-left: 0;
+            margin-right: 0.5rem;
+          }
+        }
+        .p-menuitem-icon {
+          margin-left: 0;
+          margin-right: 0.5em;
+        }
+      }
+    }
+  }
+
+  i[class*="lock"] {
+    background-color: var(--surface-d);
+    cursor: pointer;
+    .p-ink {
+      background-color: var(--surface-c);
+    }
+  }
+}

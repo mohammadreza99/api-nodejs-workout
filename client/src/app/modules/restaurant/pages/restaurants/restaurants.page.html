@@ -1,0 +1,8 @@
+<page-container header="رستوران ها" *ngIf="rowData">
+  <ng-button icon="pi pi-plus" color="success" iconPos="right" label="افزودن" (click)="onAddRestaurant()"></ng-button>
+  <ng-table [colDef]="colDef" [items]="rowData"
+            [actions]="[{action:'delete',color:'danger',icon:'pi pi-times'},
+            {action:'update',color:'info',icon:'pi pi-pencil'}]"
+            (onActionClick)="onActionClick($event)"
+  ></ng-table>
+</page-container>

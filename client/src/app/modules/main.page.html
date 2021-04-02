@@ -1,0 +1,11 @@
+<navbar-menu
+  [(sidebarVisible)]="sidebarVisible"
+  [(sidebarLock)]="sidebarLock"
+></navbar-menu>
+<main
+  [ngClass]="{rtl: fa,'sidebar-open':sidebarVisible,'sidebar-lock':sidebarLock}"
+>
+  <router-outlet></router-outlet>
+</main>
+<ng-loading></ng-loading>
+<p-scrollTop></p-scrollTop>

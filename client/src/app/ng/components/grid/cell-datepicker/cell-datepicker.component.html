@@ -1,0 +1,20 @@
+<span>{{ cellValue }}</span>
+<label
+  *ngIf="!readonly"
+  style="cursor: pointer"
+  class="p-1 mb-0 mr-2 border bg-light"
+  (click)="onClick($event)"
+  >{{ label }}</label
+>
+<p-dialog
+  [draggable]="false"
+  appendTo="body"
+  [modal]="true"
+  [(visible)]="showDialog"
+>
+  <ng-date-picker
+    (onChange)="dateChange($event)"
+    [inline]="true"
+    [value]="datepickerValue"
+  ></ng-date-picker>
+</p-dialog>

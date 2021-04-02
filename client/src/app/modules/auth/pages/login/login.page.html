@@ -1,0 +1,61 @@
+<div class="container-fluid h-100">
+  <div class="row align-content-center justify-content-center h-100">
+    <div class="col-12">
+      <form
+        class="form-row justify-content-center"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit()"
+      >
+        <div class="p-4 box rounded-lg shadow">
+          <h2 class="text-center">ورود</h2>
+          <ng-input-text
+            formControlName="email"
+            [showRequiredStar]="false"
+            icon="pi pi-user"
+            placeholder="نام کاربری"
+            [errors]="{'required':'این فیلد الزامیست.','email':'ایمیل نامعتبر است.'}"
+            [rtl]="fa"
+          ></ng-input-text>
+          <ng-input-text
+            type="password"
+            icon="pi pi-key"
+            [showRequiredStar]="false"
+            formControlName="password"
+            placeholder="رمز عبور"
+            [errors]="{'required':'این فیلد الزامیست.'}"
+            [rtl]="fa"
+          ></ng-input-text>
+          <ng-button
+            class="mt-4"
+            [full]="true"
+            type="submit"
+            label="ورود"
+          ></ng-button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="background">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>

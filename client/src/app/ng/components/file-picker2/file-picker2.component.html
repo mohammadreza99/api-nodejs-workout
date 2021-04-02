@@ -1,0 +1,101 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top',
+      'ng-invalid ng-dirty': ngControl ? isInvalid(ngControl.control) : false
+    }"
+  >
+    <ng-container *ngIf="!multiple">
+      <div class="single-wrapper">
+        <div [class.p-2]="filesToShow.length != 0" *ngIf="showImagePreview">
+          <img class="rounded w-100" [src]="filesToShow[0]" />
+        </div>
+        <div class="d-flex align-content-center buttonbar">
+          <input
+            type="file"
+            [attr.id]="inputId"
+            [accept]="accept"
+            [disabled]="disabled"
+            (change)="onSingleSelect($event)"
+          />
+          <label
+            class="btn btn-{{ color }} mb-0 flex-grow-1 text-center"
+            [attr.for]="inputId"
+            >{{ chooseLabel }}</label
+          >
+          <i
+            *ngIf="filesToShow.length != 0"
+            class="fa fa-trash"
+            (click)="onSingleDelete()"
+          ></i>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="multiple">
+      <div class="multiple-wrapper" [class.flex-row-reverse]="rtl">
+        <div
+          [class.forbidden]="filesToEmit?.length == fileLimit"
+          *ngIf="!readonly"
+          (click)="uploader.click()"
+          class="image-uploader d-flex align-items-center justify-content-center"
+        >
+          <i class="fas fa-2x fa-camera-retro"></i>
+          <input
+            [accept]="accept"
+            type="file"
+            #uploader
+            (change)="onMultipleSelect($event)"
+          />
+        </div>
+        <div
+          *ngFor="let item of filesToShow; let i = index"
+          class="image-item mr-3 mb-2"
+        >
+          <div
+            class="image-item-image"
+            [style.backgroundImage]="'url(' + item + ')'"
+          ></div>
+          <i
+            *ngIf="!readonly"
+            class="image-item-trash fal fa-trash-alt"
+            (click)="onMultipleDelete($event, i)"
+          ></i>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small
+        *ngIf="showError(error.key)"
+        class="error p-invalid p-error"
+        [class.mt-4]="hint"
+      >
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl,
+      'text-muted': disabled
+    }"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

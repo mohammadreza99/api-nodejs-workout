@@ -1,0 +1,66 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top'
+    }"
+  >
+    <div class="root">
+      <p-selectButton
+        [(ngModel)]="value"
+        [options]="options"
+        [optionLabel]="optionLabel"
+        [optionValue]="optionValue"
+        [optionDisabled]="optionDisabled"
+        [multiple]="multiple"
+        [disabled]="disabled"
+        [dataKey]="dataKey"
+        [attr.id]="inputId"
+        [ngAddon]="addon"
+        [ngClass]="{
+          'ng-invalid ng-dirty': ngControl
+            ? isInvalid(ngControl.control)
+            : false
+        }"
+        (onChange)="_onChange($event)"
+        (onOptionClick)="_onOptionClick($event)"
+        (onBeforeBtnClick)="emitter('onBeforeBtnClick', $event)"
+        (onAfterBtnClick)="emitter('onAfterBtnClick', $event)"
+      ></p-selectButton>
+    </div>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small
+        *ngIf="showError(error.key)"
+        class="error p-invalid p-error"
+        [class.mt-4]="hint"
+      >
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl,
+      'text-muted': disabled
+    }"
+    [attr.for]="inputId"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

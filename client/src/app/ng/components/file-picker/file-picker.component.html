@@ -1,0 +1,84 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top'
+    }"
+  >
+    <p-fileUpload
+      [disabled]="disabled"
+      [name]="name"
+      [url]="url"
+      [multiple]="multiple"
+      [withCredentials]="withCredentials"
+      [customUpload]="customUpload"
+      [auto]="auto"
+      [accept]="accept"
+      [method]="method"
+      [maxFileSize]="maxFileSize"
+      [previewWidth]="previewWidth"
+      [fileLimit]="fileLimit"
+      [mode]="mode"
+      [chooseLabel]="chooseLabel"
+      [uploadLabel]="uploadLabel"
+      [cancelLabel]="cancelLabel"
+      [files]="value || []"
+      [headers]="headers"
+      [showUploadButton]="showUploadButton"
+      [showCancelButton]="showCancelButton"
+      [invalidFileSizeMessageSummary]="invalidFileSizeMessageSummary"
+      [invalidFileSizeMessageDetail]="invalidFileSizeMessageDetail"
+      [invalidFileTypeMessageSummary]="invalidFileTypeMessageSummary"
+      [invalidFileLimitMessageDetail]="invalidFileLimitMessageDetail"
+      [invalidFileLimitMessageSummary]="invalidFileLimitMessageSummary"
+      [invalidFileTypeMessageDetail]="invalidFileTypeMessageDetail"
+      [ngClass]="{
+        'ng-invalid ng-dirty': ngControl ? isInvalid(ngControl.control) : false
+      }"
+      (onProgress)="_onProgress($event)"
+      (onSelect)="_onSelect($event)"
+      (onRemove)="_onRemove($event)"
+      (onClear)="_onClear()"
+      (onError)="_onError($event)"
+      (onBeforeUpload)="_onBeforeUpload($event)"
+      (onUpload)="_onUpload($event)"
+      (onSend)="_onSend($event)"
+      (uploadHandler)="_uploadHandler($event)"
+    >
+    </p-fileUpload>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small
+        *ngIf="showError(error.key)"
+        class="error p-invalid p-error"
+        [class.mt-4]="hint"
+      >
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl,
+      'text-muted': disabled
+    }"
+    [attr.for]="inputId"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

@@ -1,0 +1,100 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top',
+      'p-float-label': labelPos == 'float',
+      'p-input-icon-left': icon && iconPos == 'left',
+      'p-input-icon-right': icon && iconPos == 'right',
+      'p-inputtext-sm': inputSize == 'sm',
+      'p-inputtext-lg': inputSize == 'lg',
+      'p-input-filled': filled || value
+    }"
+  >
+    <i *ngIf="icon" [ngClass]="icon"></i>
+    <p-multiSelect
+      [(ngModel)]="value"
+      [ngAddon]="addon"
+      [appendTo]="appendTo"
+      [autofocusFilter]="autofocusFilter"
+      [defaultLabel]="defaultLabel"
+      [dataKey]="dataKey"
+      [disabled]="disabled"
+      [displaySelectedLabel]="displaySelectedLabel"
+      [emptyFilterMessage]="emptyFilterMessage"
+      [filter]="filter"
+      [filterMatchMode]="filterMatchMode"
+      [filterValue]="filterValue"
+      [filterBy]="filterBy"
+      [filterPlaceHolder]="filterPlaceHolder"
+      [maxSelectedLabels]="maxSelectedLabels"
+      [options]="options"
+      [optionLabel]="optionLabel"
+      [optionValue]="optionValue"
+      [optionDisabled]="optionDisabled"
+      [overlayVisible]="overlayVisible"
+      [placeholder]="placeholder"
+      [readonly]="readonly"
+      [inputId]="inputId"
+      [resetFilterOnHide]="resetFilterOnHide"
+      [selectedItemsLabel]="selectedItemsLabel"
+      [selectionLimit]="selectionLimit"
+      [showHeader]="showHeader"
+      [showToggleAll]="showToggleAll"
+      [tooltip]="tooltip"
+      [tooltipPosition]="tooltipPosition"
+      [ngClass]="{
+        'ng-invalid ng-dirty': ngControl ? isInvalid(ngControl.control) : false
+      }"
+      [virtualScroll]="virtualScroll"
+      [scrollHeight]="scrollHeight"
+      [baseZIndex]="200000"
+      (onClick)="emitter('onClick', $event)"
+      (onChange)="_onChange($event)"
+      (onFocus)="emitter('onFocus', $event)"
+      (onBlur)="_onBlur()"
+      (onPanelShow)="emitter('onPanelShow', $event)"
+      (onPanelHide)="emitter('onPanelHide', $event)"
+      (onBeforeBtnClick)="emitter('onBeforeBtnClick', $event)"
+      (onAfterBtnClick)="emitter('onAfterBtnClick', $event)"
+    ></p-multiSelect>
+
+    <label *ngIf="label && labelPos == 'float'" [attr.for]="inputId">{{
+      label
+    }}</label>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small
+        *ngIf="showError(error.key)"
+        class="error p-invalid p-error"
+        [class.mt-4]="hint"
+      >
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl,
+      'text-muted': disabled
+    }"
+    [attr.for]="inputId"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

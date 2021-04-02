@@ -1,0 +1,80 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top'
+    }"
+  >
+    <p-tree
+      [value]="items"
+      [attr.id]="inputId"
+      [selectionMode]="selectionMode"
+      [selection]="selection"
+      [contextMenu]="contextMenu"
+      [layout]="layout"
+      [draggableScope]="draggableScope"
+      [droppableScope]="droppableScope"
+      [draggableNodes]="draggableNodes"
+      [droppableNodes]="droppableNodes"
+      [metaKeySelection]="metaKeySelection"
+      [propagateSelectionUp]="propagateSelectionUp"
+      [propagateSelectionDown]="propagateSelectionDown"
+      [loading]="loading"
+      [emptyMessage]="emptyMessage"
+      [validateDrop]="validateDrop"
+      [filter]="filter"
+      [filterBy]="filterBy"
+      [filterMode]="filterMode"
+      [filterPlaceholder]="filterPlaceholder"
+      [filterLocale]="filterLocale"
+      [scrollHeight]="scrollHeight"
+      [virtualScroll]="virtualScroll"
+      [virtualNodeHeight]="virtualNodeHeight"
+      [minBufferPx]="minBufferPx"
+      [maxBufferPx]="maxBufferPx"
+      [trackBy]="trackBy"
+      [indentation]="indentation"
+      [ngClass]="{
+        'ng-invalid ng-dirty': ngControl ? isInvalid(ngControl.control) : false
+      }"
+      (selectionChange)="_onSelectionChange($event)"
+      (onNodeSelect)="_onNodeSelect($event)"
+      (onNodeUnselect)="_onNodeUnselect($event)"
+      (onNodeExpand)="emitter('onFocus',$event)"
+      (onNodeCollapse)="emitter('onNodeCollapse',$event)"
+      (onNodeContextMenuSelect)="emitter('onNodeContextMenuSelect',$event)"
+      (onNodeDrop)="emitter('onFocus',$event)"
+      (onFilter)="emitter('onFocus',$event)"
+    ></p-tree>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small *ngIf="showError(error.key)" class="error p-invalid p-error"
+        [class.mt-4]="hint">
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl
+    }"
+    [attr.for]="inputId"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>

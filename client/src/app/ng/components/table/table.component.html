@@ -1,0 +1,566 @@
+<p-table
+  #dt
+  styleClass="custom-table {{ rtl ? 'rtl' : '' }} p-datatable-{{
+    striped ? 'striped' : ''
+  }} p-datatable-{{ size }} p-datatable-{{ gridlines ? 'gridlines' : '' }}"
+  [value]="items"
+  [columns]="colDef"
+  [rows]="rows"
+  [dataKey]="dataKey"
+  [globalFilterFields]="globalFilterFields"
+  [loading]="loading"
+  [rowHover]="rowHover"
+  [autoLayout]="autoLayout"
+  [responsive]="responsive"
+  [selection]="selection"
+  [selectionMode]="selectionMode"
+  [compareSelectionBy]="compareSelectionBy"
+  [contextMenu]="cm"
+  [contextMenuSelection]="contextMenuSelection"
+  [contextMenuSelectionMode]="contextMenuSelectionMode"
+  [reorderableColumns]="reorderableColumns"
+  [resizableColumns]="resizableColumns"
+  [columnResizeMode]="columnResizeMode"
+  [scrollable]="scrollable"
+  [scrollHeight]="scrollHeight"
+  [stateStorage]="stateStorage"
+  [stateKey]="stateKey"
+  [filterDelay]="filterDelay"
+  [rowTrackBy]="rowTrackBy"
+  [sortMode]="sortMode"
+  [defaultSortOrder]="defaultSortOrder"
+  [resetPageOnSort]="resetPageOnSort"
+  [multiSortMeta]="multiSortMeta"
+  [sortOrder]="sortOrder"
+  [sortField]="sortField"
+  [exportFilename]="exportFilename"
+  [csvSeparator]="csvSeparator"
+  [paginator]="paginator"
+  [first]="first"
+  [alwaysShowPaginator]="alwaysShowPaginator"
+  [paginatorPosition]="paginatorPosition"
+  [showPageLinks]="showPageLinks"
+  [showJumpToPageDropdown]="showJumpToPageDropdown"
+  [pageLinks]="pageLinks"
+  [showFirstLastIcon]="showFirstLastIcon"
+  [totalRecords]="totalRecords"
+  [paginatorDropdownAppendTo]="paginatorDropdownAppendTo"
+  [currentPageReportTemplate]="currentPageReportTemplate"
+  [showCurrentPageReport]="currentPageReportTemplate != null"
+  [rowsPerPageOptions]="rowsPerPageOptions"
+  (selectionChange)="onSelectionChange($event)"
+  (contextMenuSelectionChange)="onContextMenuSelectionChange($event)"
+  (onRowSelect)="_onRowSelect($event)"
+  (onRowUnselect)="_onRowUnselect($event)"
+  (onPage)="_onPage($event)"
+  (onSort)="_onSort($event)"
+  (onFilter)="_onFilter($event)"
+  (onContextMenuSelect)="_onContextMenuSelect($event)"
+  (onColResize)="_onColResize($event)"
+  (onColReorder)="_onColReorder($event)"
+  (onRowReorder)="_onRowReorder($event)"
+  (onEditInit)="_onEditInit($event)"
+  (onEditComplete)="_onEditComplete($event)"
+  (onEditCancel)="_onEditCancel($event)"
+  (onHeaderCheckboxToggle)="_onHeaderCheckboxToggle($event)"
+  (onStateSave)="_onStateSave($event)"
+  (onStateRestore)="_onStateRestore($event)"
+>
+  <ng-template pTemplate="caption" *ngIf="hasCaption">
+    <div class="d-flex align-items-center g-search">
+      <span *ngIf="header">
+        {{ header }}
+      </span>
+      <div class="g-search-input">
+        <ng-input-text
+          *ngIf="globalFilterFields"
+          [rtl]="rtl"
+          [iconPos]="rtl ? 'left' : 'right'"
+          icon="pi pi-search"
+          [placeholder]="globalFilterPlaceholder"
+          (input)="dt.filterGlobal($event.target.value, 'contains')"
+        ></ng-input-text>
+      </div>
+      <div class="exports">
+        <ng-button
+          *ngIf="exportCsvBtn"
+          icon="pi pi-file-o"
+          (click)="dt.exportCSV()"
+          pTooltip="CSV"
+          tooltipPosition="bottom"
+        ></ng-button>
+        <ng-button
+          *ngIf="exportExcelBtn"
+          icon="pi pi-file-excel"
+          (click)="exportExcel()"
+          pTooltip="XLS"
+          tooltipPosition="bottom"
+        ></ng-button>
+        <ng-button
+          *ngIf="exportPdfBtn"
+          icon="pi pi-file-pdf"
+          (click)="exportPdf()"
+          pTooltip="PDF"
+          tooltipPosition="bottom"
+        ></ng-button>
+        <ng-button
+          *ngIf="exportSelectionBtn"
+          icon="pi pi-filter"
+          (click)="dt.exportCSV({ selectionOnly: true })"
+          pTooltip="Selection Only"
+          tooltipPosition="bottom"
+        ></ng-button>
+        <ng-button
+          *ngIf="resetBtn"
+          icon="pi pi-refresh"
+          (click)="dt.reset()"
+          color="danger"
+          pTooltip="Reset"
+          tooltipPosition="bottom"
+        ></ng-button>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr [class.sticky]="stickyTopOffset">
+      <th
+        *ngIf="reorderableRows"
+        [style.top]="stickyTopOffset"
+        style="width: 3rem"
+      ></th>
+      <th
+        *ngIf="selectableRows && selectionMode == 'checkbox'"
+        [style.top]="stickyTopOffset"
+        style="width: 3rem"
+      >
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th
+        *ngFor="let col of colDef"
+        pResizableColumn
+        pReorderableColumn
+        [pSortableColumn]="col.field"
+        [pResizableColumnDisabled]="!resizableColumns"
+        [pReorderableColumnDisabled]="!reorderableColumns"
+        [style.top]="stickyTopOffset"
+        [style.width.px]="col.width"
+        [pSortableColumnDisabled]="
+          !col.sortable || col.filter?.display == 'row'
+        "
+      >
+        <div
+          class="d-flex filter-wrapper"
+          [ngClass]="{
+            'flex-column': col.filter?.display == 'row',
+            'flex-row justify-content-between align-items-center':
+              col.filter?.display == 'menu' || !col.filter?.display
+          }"
+        >
+          <div>
+            {{ col.header }}
+            <p-sortIcon
+              *ngIf="col.sortable && col.filter?.display != 'row'"
+              [field]="col.field"
+            ></p-sortIcon>
+          </div>
+          <ng-container [ngSwitch]="col.filter?.type">
+            <p-columnFilter
+              *ngSwitchCase="'text'"
+              type="text"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [placeholder]="col.filter.placeholder || ''"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'boolean'"
+              type="boolean"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'numeric'"
+              type="numeric"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+              [useGrouping]="col.filter.useGrouping"
+              [maxConstraints]="col.filter.maxConstraints"
+              [minFractionDigits]="col.filter.minFractionDigits"
+              [maxFractionDigits]="col.filter.maxFractionDigits"
+              [prefix]="col.filter.prefix"
+              [suffix]="col.filter.suffix"
+              [currency]="col.filter.currency"
+              [currencyDisplay]="col.filter.currencyDisplay"
+            ></p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'multi-select'"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <ng-multi-select
+                  (onChange)="filter($event.value)"
+                  [rtl]="rtl"
+                  [ngModel]="value"
+                  [options]="col.filter.options"
+                  [placeholder]="col.filter.placeholder"
+                  [optionLabel]="col.filter.optionLabel || 'label'"
+                  [optionValue]="col.filter.optionValue || 'value'"
+                ></ng-multi-select>
+              </ng-template>
+            </p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'dropdown'"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <ng-dropdown
+                  [ngModel]="value"
+                  [rtl]="rtl"
+                  [options]="col.filter.options"
+                  (onChange)="filter($event.value)"
+                  [placeholder]="col.filter.placeholder"
+                  [optionLabel]="col.filter.optionLabel || 'label'"
+                  [optionValue]="col.filter.optionValue || 'value'"
+                ></ng-dropdown>
+              </ng-template>
+            </p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'date'"
+              type="date"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+            >
+              <ng-template
+                let-value
+                pTemplate="filter"
+                let-filter="filterCallback"
+              >
+                <ng-date-picker
+                  [inline]="true"
+                  [locale]="col.renderer.locale"
+                  (onChange)="filter($event.dateObj)"
+                ></ng-date-picker>
+              </ng-template>
+            </p-columnFilter>
+            <p-columnFilter
+              *ngSwitchCase="'slider'"
+              [field]="col.field"
+              [showMenu]="col.filter.showMenu || true"
+              [display]="col.filter.display || 'menu'"
+              [matchMode]="col.filter.matchMode"
+              [operator]="col.filter.operator"
+              [showMatchModes]="col.filter.showMatchModes"
+              [showOperator]="col.filter.showOperator"
+              [showAddButton]="col.filter.showAddButton"
+              [showClearButton]="col.filter.showClearButton"
+              [showApplyButton]="col.filter.showApplyButton"
+            >
+              <ng-template pTemplate="filter" let-filter="filterCallback">
+                <ng-slider
+                  [ngModel]="col.filter.rangeValues"
+                  [range]="col.filter.range"
+                  (onSlideEnd)="filter($event.values)"
+                  styleClass="m-3"
+                ></ng-slider>
+                <div
+                  class="d-flex align-items-center justify-content-between px-2"
+                >
+                  <span>{{ col.filter.rangeValues[0] }}</span>
+                  <span>{{ col.filter.rangeValues[1] }}</span>
+                </div>
+              </ng-template>
+            </p-columnFilter>
+          </ng-container>
+        </div>
+      </th>
+      <th
+        class="text-center"
+        [style.width.px]="actions?.length * 70"
+        *ngIf="actions"
+        [style.top]="stickyTopOffset"
+      >
+        {{ actionsColumnHeader }}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template
+    pTemplate="body"
+    let-rowData
+    let-columns="columns"
+    let-rowIndex="rowIndex"
+  >
+    <tr
+      [pContextMenuRow]="rowData"
+      [pContextMenuRowIndex]="rowIndex"
+      [pReorderableRow]="rowIndex"
+      [pSelectableRow]="rowData"
+      [pSelectableRowIndex]="rowIndex"
+      [pReorderableRowDisabled]="!reorderableRows"
+      [pSelectableRowDisabled]="!selectableRows"
+      [pContextMenuRowDisabled]="!contextMenuItems"
+    >
+      <td *ngIf="reorderableRows" style="width: 3rem">
+        <i class="pi pi-bars" pReorderableRowHandle></i>
+      </td>
+      <td
+        *ngIf="selectableRows && selectionMode == 'checkbox'"
+        style="width: 3rem"
+      >
+        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+      </td>
+      <td
+        *ngFor="let col of colDef"
+        [pEditableColumn]="rowData"
+        [pEditableColumnField]="col.field"
+        [pEditableColumnRowIndex]="rowIndex"
+        [pEditableColumnDisabled]="col.edit == null"
+      >
+        <ng-container *ngIf="col.edit == null">
+          <ng-container *ngIf="col.renderer.type == 'file'">
+            <span class="p-column-title">{{col.header}}</span>
+            <div class="d-flex align-items-center justify-content-between">
+              <div>
+                <i class="fa fa-file mx-2"></i>
+                <span>{{ (fromObj(rowData, col.field) | fileName) || col.nullPlaceholder || '-' }}</span>
+              </div>
+              <ng-button *ngIf="col.renderer.showFileButton"
+                         (click)="fileButtonClick(rowData,col)"
+                         icon="fal fa-external-link-alt"
+                         size="sm"
+              ></ng-button>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="col.renderer.type == 'html'">
+            <span class="p-column-title">{{col.header}}</span>
+            <div
+              class="html-view-box"
+              [innerHTML]="fromObj(rowData, col.field) || col.nullPlaceholder || '-'"
+            ></div>
+          </ng-container>
+          <ng-container *ngIf="col.renderer.type == 'text'">
+            <span class="p-column-title">{{col.header}}</span>
+            {{ fromObj(rowData, col.field) != null ? fromObj(rowData, col.field) : (col.nullPlaceholder || '-') }}
+          </ng-container>
+          <ng-container *ngIf="col.renderer.type == 'date'">
+            <span class="p-column-title">{{col.header}}</span>
+            {{
+            (fromObj(rowData, col.field)
+              | ngDate: col.renderer.locale
+              | ngPerToEnNum) || col.nullPlaceholder || '-'
+            }}
+          </ng-container>
+          <ng-container *ngIf="col.renderer.type == 'boolean'">
+            <span class="p-column-title">{{col.header}}</span>
+            <i
+              [ngClass]="[
+                fromObj(rowData, col.field)
+                  ? col.renderer.trueIcon || 'pi pi-check'
+                  : col.renderer.falseIcon || 'pi pi-times',
+                'text-center d-block'
+              ]"
+            ></i>
+          </ng-container>
+          <ng-container *ngIf="col.renderer.type == 'image'">
+            <span class="p-column-title">{{col.header}}</span>
+            <div
+              class="image-wrapper"
+              [style.backgroundImage]="
+                'url(' +
+                (fromObj(rowData, col.field) | ngToBase64 | async) +
+                ')'
+              "
+            ></div>
+          </ng-container>
+        </ng-container>
+        <p-cellEditor *ngIf="col.edit != null">
+          <ng-template pTemplate="input">
+            <ng-container [ngSwitch]="col.edit.type">
+              <ng-dropdown
+                *ngSwitchCase="'dropdown'"
+                appenTo="body"
+                [rtl]="rtl"
+                [options]="col.edit.options"
+                [ngModel]="fromObj(rowData, col.field)"
+                (onChange)="onCellEdit(rowData, col.field, $event.value)"
+              ></ng-dropdown>
+              <ng-input-text
+                *ngSwitchCase="'text'"
+                [rtl]="rtl"
+                size="md"
+                [ngModel]="fromObj(rowData, col.field)"
+                (onInput)="onCellEdit(rowData, col.field, $event.target.value)"
+              ></ng-input-text>
+              <ng-single-checkbox
+                *ngSwitchCase="'boolean'"
+                [ngModel]="fromObj(rowData, col.field)"
+                (onChange)="onCellEdit(rowData, col.field, $event.checked)"
+              >
+              </ng-single-checkbox>
+              <ng-date-picker
+                *ngSwitchCase="'date'"
+                appenTo="body"
+                [rtl]="rtl"
+                [locale]="col.renderer.locale"
+                (onChange)="onCellEdit(rowData, col.field, $event.dateObj)"
+              ></ng-date-picker>
+              <ng-file-picker
+                *ngSwitchCase="'file'"
+                mode="basic"
+                resultType="file"
+                [multiple]="false"
+                [accept]="col.edit.accept"
+                (onSelect)="onCellEdit(rowData, col.field, $event)"
+              ></ng-file-picker>
+            </ng-container>
+          </ng-template>
+          <ng-template pTemplate="output">
+            <ng-container *ngIf="col.renderer.type == 'file'">
+              <span class="p-column-title">{{col.header}}</span>
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <i class="fa fa-file mx-2"></i>
+                  <span>{{ fromObj(rowData, col.field) | fileName }}</span>
+                </div>
+                <a
+                  *ngIf="col.renderer.showFileButton"
+                  [href]="fromObj(rowData, col.field)"
+                  target="_blank"
+                >
+                  <ng-button
+                    icon="fal fa-external-link-alt"
+                    size="sm"
+                  ></ng-button>
+                </a>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="col.renderer.type == 'html'">
+              <span class="p-column-title">{{col.header}}</span>
+              <div
+                class="html-view-box"
+                [innerHTML]="fromObj(rowData, col.field) || col.nullPlaceholder || '-'"
+              ></div>
+            </ng-container>
+            <ng-container *ngIf="col.renderer.type == 'text'">
+              <span class="p-column-title">{{col.header}}</span>
+              {{ fromObj(rowData, col.field) || col.nullPlaceholder || '-' }}
+            </ng-container>
+            <ng-container *ngIf="col.renderer.type == 'date'">
+              <span class="p-column-title">{{col.header}}</span>
+              {{
+              (fromObj(rowData, col.field)
+                | ngDate: col.renderer.locale
+                | ngPerToEnNum) || col.nullPlaceholder || '-'
+              }}
+            </ng-container>
+            <ng-container *ngIf="col.renderer.type == 'boolean'">
+              <span class="p-column-title">{{col.header}}</span>
+              <i
+                [ngClass]="[
+                  fromObj(rowData, col.field)
+                    ? col.renderer.trueIcon || 'pi pi-check'
+                    : col.renderer.falseIcon || 'pi pi-times',
+                  'text-center d-block'
+                ]"
+              ></i>
+            </ng-container>
+            <ng-container *ngIf="col.renderer.type == 'image'">
+              <span class="p-column-title">{{col.header}}</span>
+              <div
+                class="image-wrapper"
+                [style.backgroundImage]="
+                  'url(' +
+                  (fromObj(rowData, col.field) | ngToBase64 | async) +
+                  ')'
+                "
+              ></div>
+            </ng-container>
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td class="actions" *ngIf="actions">
+        <ng-button
+          *ngFor="let item of actions; let last = last"
+          [color]="item.color"
+          [icon]="item.icon"
+          [pTooltip]="item.tooltip"
+          [ngClass]="getClass(rowData, item)"
+          [class.ml-2]="rtl && !last"
+          [class.mr-2]="!rtl && !last"
+          tooltipPosition="top"
+          (click)="
+            onActionClick.emit({
+              rowData: rowData,
+              action: item.action,
+              rowIndex: rowIndex
+            })
+          "
+        ></ng-button>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="actions ? columns.length + 1 : columns.length">
+        <ng-empty [message]="emptyMessage"></ng-empty>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<p-contextMenu appendTo="body" #cm [model]="contextMenuItems"></p-contextMenu>

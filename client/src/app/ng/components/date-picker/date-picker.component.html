@@ -1,0 +1,129 @@
+<div
+  class="wrapper d-flex"
+  [ngClass]="{
+    rtl: rtl,
+    ltr: !rtl,
+    'flex-column-reverse': labelPos == 'fix-top',
+    'align-items-center': labelPos == 'fix-side',
+    'align-items-end': labelPos == 'fix-top' && rtl,
+    'flex-row': labelPos == 'fix-side' && rtl,
+    'flex-row-reverse': labelPos == 'fix-side' && !rtl
+  }"
+>
+  <div
+    class="flex-grow-1"
+    [ngClass]="{
+      'w-100': labelPos == 'fix-top',
+      'p-float-label': labelPos == 'float',
+      'p-input-icon-left': icon && iconPos == 'left',
+      'p-input-icon-right': icon && iconPos == 'right',
+      'p-inputtext-sm': inputSize == 'sm',
+      'p-inputtext-lg': inputSize == 'lg',
+      'p-input-filled': filled || value
+    }"
+  >
+    <ng-container *ngIf="!inline">
+      <i
+        (click)="onClearClick()"
+        *ngIf="clearable ? value : icon"
+        class="{{ icon }} {{ clearable && !addon ? 'clearable' : '' }}"
+      ></i>
+      <input
+        pInputText
+        autocomplete="false"
+        theme="dp-material"
+        [ngAddon]="addon"
+        [dpDayPicker]="config"
+        [attr.id]="inputId"
+        [(ngModel)]="value"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [attr.id]="inputId"
+        [mode]="datePickerMode"
+        [attr.placeholder]="placeholder"
+        [ngClass]="{
+          'ng-invalid ng-dirty': ngControl
+            ? isInvalid(ngControl.control)
+            : false
+        }"
+        [readonly]="readonly"
+        (onChange)="_onChange($event)"
+        (onBlur)="_onBlur()"
+        (onFocus)="emitter('onFocus', $event)"
+        (onBeforeBtnClick)="emitter('onBeforeBtnClick', $event)"
+        (onAfterBtnClick)="emitter('onAfterBtnClick', $event)"
+      />
+      <label *ngIf="label && labelPos == 'float'" [attr.for]="inputId">{{
+        label
+      }}</label>
+    </ng-container>
+    <ng-container *ngIf="inline">
+      <div class="inline-wrapper" [ngSwitch]="datePickerMode">
+        <!-- DOES NOT SUPPORT YET! -->
+        <!-- <dp-day-time-calendar
+          *ngSwitchCase="'daytime'"
+          [(ngModel)]="value"
+          (onSelect)="_onChange($event)"
+          theme="dp-material"
+        ></dp-day-time-calendar> -->
+        <p *ngSwitchCase="'daytime'">DOES NOT SUPPORT YET!</p>
+        <dp-day-calendar
+          *ngSwitchCase="'day'"
+          [(ngModel)]="value"
+          (onSelect)="_onChange($event)"
+          theme="dp-material"
+          [ngClass]="{
+            'ng-invalid ng-dirty': ngControl
+              ? isInvalid(ngControl.control)
+              : false
+          }"
+        ></dp-day-calendar>
+        <dp-month-calendar
+          *ngSwitchCase="'month'"
+          [(ngModel)]="value"
+          (onSelect)="_onChange($event)"
+          theme="dp-material"
+          [ngClass]="{
+            'ng-invalid ng-dirty': ngControl
+              ? isInvalid(ngControl.control)
+              : false
+          }"
+        ></dp-month-calendar>
+        <dp-time-select
+          *ngSwitchCase="'time'"
+          [(ngModel)]="value"
+          (onChange)="_onChange($event)"
+          theme="dp-material"
+          [ngClass]="{
+            'ng-invalid ng-dirty': ngControl
+              ? isInvalid(ngControl.control)
+              : false
+          }"
+        ></dp-time-select>
+      </div>
+    </ng-container>
+    <ng-container *ngFor="let error of errors | keyvalue">
+      <small
+        *ngIf="showError(error.key)"
+        class="error p-invalid p-error"
+        [class.mt-4]="hint"
+      >
+        {{ error.value }}
+      </small>
+    </ng-container>
+  </div>
+  <label
+    *ngIf="label && labelPos != 'float'"
+    [style.width.px]="labelWidth"
+    [ngClass]="{
+      'mb-0': labelPos == 'fix-side',
+      'ml-4': rtl,
+      'mr-4': !rtl,
+      'text-muted': disabled
+    }"
+    [attr.for]="inputId"
+    >{{ label }}</label
+  >
+</div>
+
+<small *ngIf="hint">{{ hint }}</small>
