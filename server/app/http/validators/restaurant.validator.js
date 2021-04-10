@@ -7,4 +7,5 @@ const restaurantInsertValidator = (data) => {
     return joiObject.validate(data)
 }
 
+
 module.exports = {restaurantInsertValidator}
