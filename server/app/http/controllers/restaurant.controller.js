@@ -34,21 +34,50 @@ class RestaurantController {
     }
 
     async put(req, res) {
-        console.log(req.params.id)
-        let result = model.findByIdAndUpdate(req.params.id, {
+        let result = await model.findByIdAndUpdate(req.params.id, {
             $set: {
                 name: req.body.name,
                 description: req.body.description
             }
         }, {new: true});
+
         res.send(result);
     }
 
     async delete(req, res) {
-        const result = model.findByIdAndDelete(req.params.id);
-        await result.save();
-        res.send('deleted!');
+        const result = await model.findByIdAndRemove(req.params.id);
+        res.send(result);
     }
 }
 
+/*
+src -
+      application -
+                    user
+                    rest
+                    index.js
+      infrastructure -
+                       database -
+                                  model
+                                  repositories
+                       logging
+                              index.js
+                              logger_1Service.js
+                              logger_2Service.js
+      domain -
+            validations
+      interface -
+               utils
+               middleware
+                         errorHandler
+               modules
+                     user
+                        public
+                           post.js
+                           patch.js
+                           routes.js
+                           serializer.js
+public
+config
+ */
 module.exports = new RestaurantController();

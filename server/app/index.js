@@ -39,7 +39,7 @@ class Application {
         app.use(express.json()); // get data as json format.
         app.use(express.urlencoded({extended: true})); // get data as formData format.
         app.use(express.static("public")); //localhost:3000/test.png => read image from public folder.
-        app.use(cors()); // use middleware for all apis
+        app.use(cors({origin: '*'})); // use middleware for all apis
         app.use("/api", apiRoutes); // use apiRoutes only for apis that have "/api
         app.use(errorMiddleware);
     }

@@ -35,7 +35,12 @@ const restaurantSchema = new mongoose.Schema({
     adminUsername: {type: String},
     adminPassword: {type: String}
 });
-
+restaurantSchema.pre("insertMany", function (next) {
+    console.log(this._id)
+})
+restaurantSchema.post("deleteOne", function (next) {
+    console.log(this._id)
+})
 const model = mongoose.model('restaurant', restaurantSchema);
 
 module.exports = model;

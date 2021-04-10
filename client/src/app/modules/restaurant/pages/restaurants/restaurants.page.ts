@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { UtilsService } from '@ng/services';
-import { NgColDef } from '@ng/models/table';
-import { RestaurantService } from '@core/http';
+import {Component, OnInit} from '@angular/core';
+import {UtilsService} from '@ng/services';
+import {NgColDef} from '@ng/models/table';
+import {RestaurantService} from '@core/http';
+import {switchMap} from 'rxjs/operators';
+import {NgDialogFormConfig} from "@ng/models/overlay";
 
 @Component({
   selector: 'ng-restaurants',
@@ -37,20 +39,31 @@ export class RestaurantsPage implements OnInit {
     this.rowData = await this.restaurantService.get().toPromise();
   }
 
-  onAddRestaurant() {
-    this.utilsService.showDialogForm('افزودن رستوران', [
+  getConfig(value?) {
+    return [
+      {type: 'hidden', formControlName: '_id', value: value?._id},
       {
         type: 'text',
-        formControlName: 'name'
+        formControlName: 'name',
+        label: 'عنوان',
+        value: value?.name
       },
       {
         type: 'text',
-        formControlName: 'description'
+        formControlName: 'description',
+        label: 'توضیحات',
+        value: value?.description
       }
-    ]).onClose.subscribe(res => {
+    ] as NgDialogFormConfig[];
+  }
+
+  onAddRestaurant() {
+    this.utilsService.showDialogForm('افزودن رستوران', this.getConfig()).onClose.pipe(switchMap((res) => {
       if (res) {
-        this.restaurantService.post(res).subscribe();
+        return this.restaurantService.post(res);
       }
+    })).subscribe(res => {
+      this.rowData = [...this.rowData, res];
     });
   }
 
@@ -58,26 +71,23 @@ export class RestaurantsPage implements OnInit {
     const rowData = event.rowData;
     switch (event.action) {
       case 'update':
-        this.utilsService.showDialogForm('ویرایش رستوران', [
-          {type: 'hidden', formControlName: '_id', value: rowData._id},
-          {
-            type: 'text',
-            formControlName: 'name',
-            value: rowData.name
-          },
-          {
-            type: 'text',
-            formControlName: 'description',
-            value: rowData.description
-          }
-        ]).onClose.subscribe(res => {
+        this.utilsService.showDialogForm('ویرایش رستوران', this.getConfig(rowData)).onClose.pipe(switchMap((res) => {
           if (res) {
-            this.restaurantService.put(res).subscribe();
+            return this.restaurantService.put(res);
           }
+        })).subscribe(res => {
+          this.rowData[this.findIndex(rowData._id)] = res;
         });
         break;
       case 'delete':
-        this.restaurantService.delete(rowData._id).subscribe();
+        this.restaurantService.delete(rowData._id).subscribe((res) => {
+          this.rowData.splice(this.findIndex(rowData._id), 1);
+        });
     }
+  }
+
+  findIndex(id: any) {
+    const item = this.rowData.find(r => r._id == id);
+    return this.rowData.indexOf(item);
   }
 }

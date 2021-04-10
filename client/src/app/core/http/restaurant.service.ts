@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from '@core/http';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {ApiService} from '@core/http';
+import {Observable} from 'rxjs';
 
 class User {
 }
@@ -32,6 +32,6 @@ export class RestaurantService extends ApiService {
   }
 
   delete(id) {
-    return this._delete(id);
+    return this._delete(this.endpoint + '/' + id);
   }
 }
